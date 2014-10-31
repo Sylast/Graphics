@@ -1,0 +1,116 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+class GUI {open
+} {
+  decl {\#include "scene.h"} {}
+  Function {GUI()} {open
+  } {
+    Fl_Window uiw {
+      label GUI open
+      xywh {25 262 250 468} type Double resizable visible
+    } {
+      Fl_Button {} {
+        label DBG
+        callback {DBG_cb()}
+        xywh {65 410 100 50} box PLASTIC_UP_BOX selection_color 72
+      }
+      Fl_Menu_Button {} {
+        label File open
+        xywh {10 5 230 30} box GTK_DOWN_BOX
+      } {
+        MenuItem {} {
+          label Save
+          xywh {0 0 30 20}
+        }
+        MenuItem {} {
+          label Open
+          callback {open_cb()}
+          xywh {0 0 30 20}
+        }
+      }
+      Fl_Button {} {
+        label UP
+        xywh {60 55 50 50} box GTK_UP_BOX
+      }
+      Fl_Button {} {
+        label DOWN
+        xywh {60 105 50 50} box GTK_UP_BOX
+      }
+      Fl_Button {} {
+        label LEFT
+        xywh {10 75 50 50} box GTK_UP_BOX
+      }
+      Fl_Button {} {
+        label RIGHT
+        xywh {110 75 50 50} box GTK_UP_BOX
+      }
+      Fl_Button {} {
+        label FOWARD
+        xywh {175 70 70 30} box GTK_UP_BOX
+      }
+      Fl_Button {} {
+        label BACK
+        xywh {175 100 70 30} box GTK_UP_BOX
+      }
+      Fl_Button {} {
+        label UP
+        xywh {40 195 50 50} box GTK_UP_BOX
+      }
+      Fl_Button {} {
+        label DOWN
+        xywh {40 245 50 50} box GTK_UP_BOX
+      }
+      Fl_Button {} {
+        label LEFT
+        xywh {100 195 50 50} box GTK_UP_BOX
+      }
+      Fl_Button {} {
+        label RIGHT
+        xywh {150 195 50 50} box GTK_UP_BOX
+      }
+      Fl_Text_Display {} {
+        label TILT
+        xywh {125 185 50 10}
+      }
+      Fl_Text_Display {} {
+        label PAN
+        xywh {40 185 50 10}
+      }
+      Fl_Button {} {
+        label LEFT
+        xywh {100 245 50 50} box GTK_UP_BOX
+      }
+      Fl_Button {} {
+        label RIGHT
+        xywh {150 245 50 50} box GTK_UP_BOX
+      }
+      Fl_Text_Display {} {
+        label ROLL
+        xywh {125 295 50 10} align 2
+      }
+      Fl_Button {} {
+        label IN
+        xywh {25 340 70 30} box GTK_UP_BOX
+      }
+      Fl_Button {} {
+        label OUT
+        xywh {25 370 70 30} box GTK_UP_BOX
+      }
+      Fl_Text_Display {} {
+        label ZOOM
+        xywh {35 330 50 10}
+      }
+    }
+  }
+  Function {} {} {
+    code {scene = new Scene;} {}
+  }
+  Function {show()} {} {
+    code {uiw->show();} {}
+  }
+  Function {DBG_cb()} {} {
+    code {scene->DBG();} {}
+  }
+} 

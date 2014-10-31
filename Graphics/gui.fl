@@ -1,0 +1,96 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+class GUI {open
+} {
+  decl {\#include "scene.h"} {}
+  Function {GUI()} {open
+  } {
+    Fl_Window uiw {
+      label GUI open
+      xywh {25 262 250 468} type Double resizable visible
+    } {
+      Fl_Button {} {
+        label DBG
+        callback {DBG_cb()}
+        xywh {65 410 100 50} box PLASTIC_UP_BOX selection_color 72
+      }
+      Fl_Menu_Button {} {
+        label File open
+        xywh {10 5 230 30} box GTK_DOWN_BOX
+      } {
+        MenuItem {} {
+          label Save
+          xywh {0 0 30 20}
+        }
+        MenuItem {} {
+          label Open
+          callback {open_cb()}
+          xywh {0 0 30 20}
+        }
+      }
+      Fl_Button {} {
+        label {Edge Detect}
+        callback {edge_cb()}
+        xywh {10 70 100 50} box GTK_UP_BOX selection_color 72
+      }
+      Fl_Button {} {
+        label Blur
+        callback {blur_cb()}
+        xywh {10 130 100 50} box GTK_UP_BOX selection_color 72
+      }
+      Fl_Spinner {} {
+        label Brightness
+        callback {brightness_cb()}
+        xywh {190 75 50 30} when 1 minimum 0 value 50
+      }
+      Fl_Spinner {} {
+        label Contrast
+        xywh {190 150 50 30} when 1 minimum 0 value 50
+      }
+      Fl_Group {} {open
+        xywh {5 190 110 130}
+      } {
+        Fl_Button {} {
+          label Line
+          callback {line_cb()}
+          tooltip {Click twice for line poitns.} xywh {10 195 100 50} box GTK_UP_BOX selection_color 72
+        }
+        Fl_Button {} {
+          label Circle
+          callback {circle_cb()}
+          tooltip {1st: Center 2nd: distance from Center} xywh {10 255 100 50} box GTK_UP_BOX down_box GTK_DOWN_BOX selection_color 137 when 1
+        }
+      }
+    }
+  }
+  Function {} {} {
+    code {scene = new Scene;} {}
+  }
+  Function {show()} {} {
+    code {uiw->show();} {}
+  }
+  Function {DBG_cb()} {} {
+    code {scene->DBG();} {}
+  }
+  Function {open_cb()} {} {
+    code {scene->open( fl_file_chooser("Image Chooser", "Tiff Files (*.tif)", NULL, 0));} {}
+  }
+  Function {edge_cb()} {} {
+    code {scene->edge();} {}
+  }
+  Function {blur_cb()} {} {
+    code {scene->blur();} {}
+  }
+  Function {brigtness_cb()} {} {
+    code {//Change brightness} {}
+  }
+  Function {contrast_cb()} {} {
+    code {//Change contrast} {}
+  }
+  Function {line_cb()} {open
+  } {
+    code {printf("Hello, World!\\n");} {}
+  }
+} 

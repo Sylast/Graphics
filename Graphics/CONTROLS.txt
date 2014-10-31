@@ -1,0 +1,15 @@
+Movement with keys.
+Inverted tilt.
+
+Arrow Keys UP, DOWN, LEFT, RIGHT.
+
+PAGE UP 	= Move Forward
+PAGE DOWN	= Move Backward
+
+W	= Tilt Down
+A	= Pan Left
+D	= Pan Right
+S	= Tilt Up
+
+Q	= Roll Counter-Clockwise
+E	= Roll Clockwise
