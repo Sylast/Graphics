@@ -81,8 +81,8 @@ Scene::Scene() {
 	lights[0] = new Light(lp, tmeshes[1]->GetCenter(), 512, 512);
 	lp = vector(-100.0f, 50.0f, -700.0f);
 	lights[1] = new Light(lp, tmeshes[1]->GetCenter(), 512, 512);
-	lights[1]->on = false;
-	lights[0]->on = false;
+	//lights[1]->on = false;
+	//lights[0]->on = false;
 
 	RenderShadow();
 	Render();
@@ -141,17 +141,20 @@ void Scene::RenderHW() {
 
 void Scene::InitializeTextures() {
 
-	glGenTextures(texturesN, texName);
-	glBindTexture(GL_TEXTURE_2D, texName[0]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textures[0]->w, textures[0]->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, textures[0]->pix);  
-	glBindTexture(GL_TEXTURE_2D, 0);
-	GLenum err;
-	while((err = glGetError()) != GL_NO_ERROR) {
-		cerr << "INIT" << err << endl;
+	for(int ti = 0; ti < texturesN; ti++) {
+		glGenTextures(texturesN, texName);
+		glBindTexture(GL_TEXTURE_2D, texName[ti]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textures[ti]->w, textures[ti]->h,
+						0, GL_RGBA, GL_UNSIGNED_BYTE, textures[ti]->pix);  
+		glBindTexture(GL_TEXTURE_2D, 0);
+		GLenum err;
+		while((err = glGetError()) != GL_NO_ERROR) {
+			cerr << "INIT" << err << endl;
+		}
 	}
 
 }

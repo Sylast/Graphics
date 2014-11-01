@@ -46,6 +46,8 @@ public:
 
   void RenderHW();
   void InitializeTextures();
+  void InitializeLights();
+  //void InitializeShadowMap();
 
   void blur();
   void emboss();

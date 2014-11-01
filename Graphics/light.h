@@ -15,4 +15,3 @@ public:
 	Light(vector center, vector lap, int w, int h);
 
 };
-
