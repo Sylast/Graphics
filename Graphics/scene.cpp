@@ -12,6 +12,7 @@ Scene::Scene() {
 	gui = new GUI();
 	gui->show();
 
+	HWinit = false;
 
 	int u0 = 280;
 	int v0 = 50;
@@ -32,6 +33,7 @@ Scene::Scene() {
 
 	texturesN = 1;
 	textures = new FrameBuffer*[texturesN];
+	texName = new GLuint[texturesN];
 	char * name = "TIFFimages/Brick_Wall_Texture.tif";
 	textures[0] = new FrameBuffer(0,0,512,512);
 	openTexture(name, textures[0]);
@@ -137,6 +139,23 @@ void Scene::RenderHW() {
 	}
 }
 
+void Scene::InitializeTextures() {
+
+	glGenTextures(texturesN, texName);
+	glBindTexture(GL_TEXTURE_2D, texName[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textures[0]->w, textures[0]->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, textures[0]->pix);  
+	glBindTexture(GL_TEXTURE_2D, 0);
+	GLenum err;
+	while((err = glGetError()) != GL_NO_ERROR) {
+		cerr << "INIT" << err << endl;
+	}
+
+}
+
 void Scene::save( const char* imageName ) {
 	if(imageName == NULL) return;
 
@@ -169,6 +188,7 @@ void Scene::save( const char* imageName ) {
 	TIFFClose(tif);
 	if(line)_TIFFfree(line);
 }
+
 void Scene::open( const char* imageName ) {
 	if(imageName == NULL) return;
 	TIFF* tif = TIFFOpen(imageName, "r");

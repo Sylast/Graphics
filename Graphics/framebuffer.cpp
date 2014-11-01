@@ -18,6 +18,11 @@ void FrameBuffer::draw() {
 
 	glDrawPixels(w, h, GL_RGBA, GL_UNSIGNED_BYTE, pix);
 	if(isHW) {
+		if(!scene->HWinit) {
+			glEnable(GL_DEPTH_TEST);
+			scene->InitializeTextures();
+			scene->HWinit = true;
+		}
 		scene->RenderHW();
 	}
 }
@@ -179,7 +184,6 @@ void FrameBuffer::GLFrameClear() {
 	glClear(GL_COLOR_BUFFER_BIT |
 			GL_DEPTH_BUFFER_BIT |
 			GL_STENCIL_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
 }
 
 void FrameBuffer::Convolve33(matrix kernel, FrameBuffer *&fb1) {

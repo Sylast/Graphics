@@ -441,7 +441,7 @@ void TMesh::RenderFilled(PPC *ppc, FrameBuffer *fb, unsigned int color, int ligh
 }
 
 void TMesh::RenderHW() {
-	if (RenderMode == 0)
+	if (RenderMode == WF)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -456,25 +456,21 @@ void TMesh::RenderHW() {
 		glEnableClientState(GL_COLOR_ARRAY);
 		glColorPointer(3, GL_FLOAT, 0, (float*)cols);
 	}
-	if (tcs) {
-		/*
-		unsigned int texName;
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, 0, (float*)tcs);
-		glIsEnabled(GL_TEXTURE_COORD_ARRAY);
+	if (tcs && RenderMode == TM) {
 		glEnable(GL_TEXTURE_2D);
-		glGenTextures(1, &texName);
-		glBindTexture(GL_TEXTURE_2D, texName);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
-		glDisable(GL_TEXTURE_2D);
-		*/
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glBindTexture(GL_TEXTURE_2D, scene->texName[0]);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glTexCoordPointer(2, GL_FLOAT, 0, tcs);
+		glFlush();
+		GLenum err;
+		while((err = glGetError()) != GL_NO_ERROR) {
+			cerr << "TM" << err << endl;
+		}
+
 	}
 	glDrawElements(GL_TRIANGLES, 3*trisN, GL_UNSIGNED_INT, tris);
+	glDisable(GL_TEXTURE_2D);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);

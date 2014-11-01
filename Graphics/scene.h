@@ -32,7 +32,9 @@ public:
   Light **lights;
   int texturesN;
   FrameBuffer **textures;
+  GLuint *texName;
   float ka;
+  bool HWinit;
 
   Scene();
   void open( const char* );
@@ -41,7 +43,9 @@ public:
   void DBG();
   void Render();
   void RenderShadow();
+
   void RenderHW();
+  void InitializeTextures();
 
   void blur();
   void emboss();
