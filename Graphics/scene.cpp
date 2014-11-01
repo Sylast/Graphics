@@ -77,7 +77,7 @@ Scene::Scene() {
 	lightsN = 2;
 	ka = 0.1f;
 	lights = new Light*[lightsN];
-	vector lp(500.0f, 0.0f, -300.0f);
+	vector lp(300.0f, 50.0f, -300.0f);
 	lights[0] = new Light(lp, tmeshes[1]->GetCenter(), 512, 512);
 	lp = vector(-100.0f, 50.0f, -700.0f);
 	lights[1] = new Light(lp, tmeshes[1]->GetCenter(), 512, 512);
@@ -156,6 +156,30 @@ void Scene::InitializeTextures() {
 			cerr << "INIT" << err << endl;
 		}
 	}
+
+}
+
+void Scene::InitializeLights() {
+	
+	float ka[] = {0.0f, 0.0f, 0.0f, 1.0f};
+	float kd[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	float ks[] = {1.0f, 1.0f, 1.0f, 1.0f};
+
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_LIGHTING);
+	if(!lights[0]->on)
+		return;
+	vector LP = lights[0]->L->C;
+	vector LD = lights[0]->L->GetVD();
+	float lightPos[] = {LP[0], LP[1], LP[2], 0};
+	float lightDir[] = {LD[0], LD[1], LD[2], 0};
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightDir);
+	glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 45.0);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ka);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, kd);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, ks);
+	glEnable(GL_LIGHT0);
 
 }
 

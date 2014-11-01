@@ -446,6 +446,7 @@ void TMesh::RenderHW() {
 	else 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+	glDisable(GL_LIGHTING);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, (float*)verts);
 	if (normals) {
@@ -458,7 +459,8 @@ void TMesh::RenderHW() {
 	}
 	if (tcs && RenderMode == TM) {
 		glEnable(GL_TEXTURE_2D);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glDisableClientState(GL_COLOR_ARRAY);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		glBindTexture(GL_TEXTURE_2D, scene->texName[0]);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glTexCoordPointer(2, GL_FLOAT, 0, tcs);
@@ -468,6 +470,11 @@ void TMesh::RenderHW() {
 			cerr << "TM" << err << endl;
 		}
 
+	}
+	if (scene->lightsN) {
+		glEnable(GL_LIGHTING);
+		glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+		glEnable(GL_COLOR_MATERIAL);
 	}
 	glDrawElements(GL_TRIANGLES, 3*trisN, GL_UNSIGNED_INT, tris);
 	glDisable(GL_TEXTURE_2D);
