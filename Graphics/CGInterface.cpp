@@ -16,7 +16,7 @@ void CGInterface::PerSessionInit() {
 	CGprofile latestPixelProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
 
 	if (latestGeometryProfile == CG_PROFILE_UNKNOWN) {
-		err << "ERROR: geometry profile is not available" << endl;
+		cerr << "ERROR: geometry profile is not available" << endl;
 #ifdef GEOM_SHADER
 		exit(0);
 #endif
@@ -88,4 +88,35 @@ bool FullShader::PerSessionInit(CGInterface *cgi) {
 		return false;
 	}
 
+#ifdef GEOM_SHADER
+	cgGLLoadProgram(geometryProgram);
+#endif
+	cgGLLoadProgram(vertexProgram);
+	cgGLLoadProgram(fragmentProgram);
+
+	vertexModelViewProj = cgGetNamedParameter( vertexProgram, "modelViewProj" );
+	geometryModelViewProj = cgGetNamedParameter( geometryProgram, "modelViewProj" );
+
+	return true;
+
+}
+
+void FullShader::PerFrameInit() {
+	
+	cgGLSetStateMatrixParameter( vertexModelViewProj, 
+		CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
+
+	cgGLSetStateMatrixParameter( geometryModelViewProj, 
+		CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY );
+
+}
+
+void FullShader::PerFrameDisable() {}
+
+void FullShader::BindPrograms() {
+	cgGLBindProgram( vertexProgram );
+	cgGLBindProgram( fragmentProgram );
+#ifdef GEOM_SHADER
+	cgGLBindProgram( geometryProgram );
+#endif
 }

@@ -12,6 +12,9 @@ Scene::Scene() {
 	gui = new GUI();
 	gui->show();
 
+	cgi = new CGInterface();
+	fsi = new FullShader();
+
 	HWinit = false;
 
 	int u0 = 280;
@@ -52,6 +55,7 @@ Scene::Scene() {
 	vector newCenter = vector(-75.0f, -10.0f, -300.0f);
 	tmeshes[1]->Position(newCenter);
 	tmeshes[1]->RenderMode = MCI;
+	tmeshes[1]->shade = true;
 	
 	tmeshes[2] = new TMesh();
 	tmeshes[2]->LoadBin("geometry/teapot1K.bin");
@@ -60,6 +64,7 @@ Scene::Scene() {
 	tmeshes[2]->Scale(1.5f);
 	tmeshes[2]->Position(newCenter);
 	tmeshes[2]->Rotate(yaxis, 50.0f);
+	tmeshes[2]->shade = true;
 	
 	tmeshes[3] = new TMesh();
 	tmeshes[3]->LoadBin("geometry/teapot1K.bin");
@@ -127,6 +132,12 @@ void Scene::RenderShadow() {
 void Scene::RenderHW() {
 	hwfb->GLFrameClear();
 
+	// initialize GPU programming interfaces
+	if (cgi->needInit) {
+		cgi->PerSessionInit();
+		fsi->PerSessionInit(cgi);
+	}
+
 	float zNear = 1.0f;
 	float zFar = 1000.0f;
 	ppc->SetIntrinsics(zNear, zFar);
@@ -135,7 +146,18 @@ void Scene::RenderHW() {
 	for( int tmi = 0; tmi < tmeshesN; tmi++ ){
 		if( !tmeshes[tmi]->enabled )
 			continue;
+		if( tmeshes[tmi]->shade ) {
+			fsi->PerFrameInit();
+			fsi->BindPrograms();
+			cgi->EnableProfiles();
+		}
+		
 		tmeshes[tmi]->RenderHW();
+
+		if( tmeshes[tmi]->shade ) {
+			fsi->PerFrameDisable();
+			cgi->DisableProfiles();
+		}
 	}
 }
 

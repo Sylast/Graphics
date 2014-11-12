@@ -112,10 +112,10 @@
     <None Include="geometry\terrain.bin">
       <Filter>Resource Files\Geometry</Filter>
     </None>
-    <None Include="FullShader.cg">
+    <None Include="CG\FullShader.cg">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="ReflectionShader.cg">
+    <None Include="CG\ReflectionShader.cg">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>

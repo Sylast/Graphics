@@ -4,7 +4,10 @@
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"comctl32.lib")
 #pragma comment(lib,"libtiff.lib")
+#pragma comment(lib, "cg.lib")
+#pragma comment(lib, "cgGL.lib")
 
+#include "CGInterface.h"
 #include "gui.h"
 #include "framebuffer.h"
 #include "ppc.h"
@@ -22,6 +25,8 @@
 class Scene {
 public:
   
+  CGInterface *cgi; 
+  FullShader *fsi;
   GUI *gui;
   FrameBuffer *fb;
   FrameBuffer *hwfb;
