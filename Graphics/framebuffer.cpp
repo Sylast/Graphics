@@ -21,7 +21,7 @@ void FrameBuffer::draw() {
 		if(!scene->HWinit) {
 			glEnable(GL_DEPTH_TEST);
 			scene->InitializeTextures();
-			scene->InitializeLights();
+			//scene->InitializeLights();
 			scene->HWinit = true;
 		}
 		scene->RenderHW();

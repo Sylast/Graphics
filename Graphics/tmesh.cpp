@@ -86,6 +86,7 @@ TMesh::TMesh(vector center, vector dims, unsigned int color) {
 
 }
 
+//Sets up a 3d quad with a texture and texture coord if given
 TMesh::TMesh(vector center, vector dims, unsigned int color, int texN, float tile) : aabb(0) {
 
 	enabled = true;
@@ -263,9 +264,15 @@ void TMesh::RenderWireframe(PPC *ppc, FrameBuffer *fb, unsigned int color) {
 	}
 
 }
-
+/*	Render Modes are
+ *	-Vertex Color Interpolation
+ *  -Texture Mapping
+ *	Renders the triangle mess, shades using the sence lights.
+ *  Shadow Mapping implimented 
+ */
 void TMesh::RenderFilled(PPC *ppc, FrameBuffer *fb, unsigned int color, int lightsN, Light **L, float ka, FrameBuffer *texture, int renderMode) {
 
+	//Project vertices on to the camera
 	vector *pverts = new vector[vertsN];
 	for (int vi = 0; vi < vertsN; vi++) {
 		ppc->Project(verts[vi], pverts[vi]);
@@ -312,21 +319,17 @@ void TMesh::RenderFilled(PPC *ppc, FrameBuffer *fb, unsigned int color, int ligh
 		ptm = invert(ptm);
 
 		// Set up for normals
-		/*
-		nxABC = ptm * vector( normals[vinds[0]][0], normals[vinds[1]][0], normals[vinds[2]][0] );
-		nyABC = ptm * vector( normals[vinds[0]][1], normals[vinds[1]][1], normals[vinds[2]][1] );
-		nzABC = ptm * vector( normals[vinds[0]][2], normals[vinds[1]][2], normals[vinds[2]][2] );
-		*/
 		vector nx( normals[vinds[0]][0], normals[vinds[1]][0], normals[vinds[2]][0] );
 		vector ny( normals[vinds[0]][1], normals[vinds[1]][1], normals[vinds[2]][1] );
 		vector nz( normals[vinds[0]][2], normals[vinds[1]][2], normals[vinds[2]][2] );
-		// Set depth interpolation
+		// Set depth interpolation through screen space interpolation
 		zABC = ptm * depth;
 
 		//Matrix for Model Space interpolation
 		matrix Q;
 		Q = ComputeRastMatrix(ppc, verts[vinds[0]], verts[vinds[1]], verts[vinds[2]]);
 		DEF = Q[0] + Q[1] + Q[2];
+		//Compute Model Space interpolation constants
 		SetModelRast(Q, nx, &nxABC); 
 		SetModelRast(Q, ny, &nyABC); 
 		SetModelRast(Q, nz, &nzABC); 
@@ -339,7 +342,7 @@ void TMesh::RenderFilled(PPC *ppc, FrameBuffer *fb, unsigned int color, int ligh
 			bABC = ptm * blue;
 
 		}else if( renderMode == MCI ) {
-			//get more rasterization parameters
+			// Set Color Model Space Constants
 			SetModelRast(Q, red, &rABC);
 			SetModelRast(Q, green, &gABC);
 			SetModelRast(Q, blue, &bABC);
@@ -398,6 +401,7 @@ void TMesh::RenderFilled(PPC *ppc, FrameBuffer *fb, unsigned int color, int ligh
 					if(st < 0 || st > h*w) continue;
 					currColor.SetFromColor(texture->pix[st]);
 				}
+				//Calculated Color at pixel using phong equation
 				for( int li = 0; li < lightsN; li++ ){
 					if(!L[li]->on)
 						continue;
@@ -423,6 +427,7 @@ void TMesh::RenderFilled(PPC *ppc, FrameBuffer *fb, unsigned int color, int ligh
 						//fb->Set(u,v, currColor.GetColor());
 						continue;
 					}
+					//Check depth from light to calculate shadows
 					float e = SMp[2]*.01;
 					if(L[li]->sm->IsFarther((int)ul, (int)vl, SMp[2]+e)) {
 						currColor = currColor * ka ;
@@ -440,6 +445,10 @@ void TMesh::RenderFilled(PPC *ppc, FrameBuffer *fb, unsigned int color, int ligh
 
 }
 
+/*
+ *	The Function to render the mesh using 
+ *	the Hardware programing pipline.
+ */
 void TMesh::RenderHW() {
 	if (RenderMode == WF)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -471,11 +480,13 @@ void TMesh::RenderHW() {
 		}
 
 	}
+	/*
 	if (scene->lightsN) {
 		glEnable(GL_LIGHTING);
 		glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 		glEnable(GL_COLOR_MATERIAL);
 	}
+	*/
 	glDrawElements(GL_TRIANGLES, 3*trisN, GL_UNSIGNED_INT, tris);
 	glDisable(GL_TEXTURE_2D);
 	glDisableClientState(GL_VERTEX_ARRAY);

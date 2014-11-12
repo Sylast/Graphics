@@ -13,6 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\Geometry">
+      <UniqueIdentifier>{062ac88b-c397-4bb4-8777-fd42bbb03b9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries">
+      <UniqueIdentifier>{93294a9b-033e-4726-ab7b-912c50e1e704}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\TIFFimages">
+      <UniqueIdentifier>{f05da02b-2d00-4e64-ab18-70eefacc1603}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{5777b3b8-d493-4c4f-975b-882bbc5addd2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.h">
@@ -37,6 +49,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,5 +83,96 @@
     <ClCompile Include="light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CGInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="geometry\auditorium.bin">
+      <Filter>Resource Files\Geometry</Filter>
+    </None>
+    <None Include="geometry\bunny.bin">
+      <Filter>Resource Files\Geometry</Filter>
+    </None>
+    <None Include="geometry\DNA.bin">
+      <Filter>Resource Files\Geometry</Filter>
+    </None>
+    <None Include="geometry\happy2.bin">
+      <Filter>Resource Files\Geometry</Filter>
+    </None>
+    <None Include="geometry\happy4.bin">
+      <Filter>Resource Files\Geometry</Filter>
+    </None>
+    <None Include="geometry\teapot1K.bin">
+      <Filter>Resource Files\Geometry</Filter>
+    </None>
+    <None Include="geometry\teapot57K.bin">
+      <Filter>Resource Files\Geometry</Filter>
+    </None>
+    <None Include="geometry\terrain.bin">
+      <Filter>Resource Files\Geometry</Filter>
+    </None>
+    <None Include="FullShader.cg">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="ReflectionShader.cg">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="TIFFimages\blur.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\Brick_Wall_Texture.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\bright.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\Circles.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\Contrast.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\dark.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\Destiny.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\edge.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\FLAG_T24.TIF">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\GMARBLES.TIF">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\MARBLES.TIF">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\name.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\rgb.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\snapple.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\white.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\wirepot.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\Wood_Texture.tif">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
+    <Image Include="TIFFimages\XING_T24.TIF">
+      <Filter>Resource Files\TIFFimages</Filter>
+    </Image>
   </ItemGroup>
 </Project>

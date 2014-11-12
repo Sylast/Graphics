@@ -21,7 +21,7 @@ Scene::Scene() {
 	int h = sci*240;
 	fb = new FrameBuffer(u0, v0, w, h);
 	fb->label("SW Framebuffer");
-	fb->show();
+	//fb->show();
 	hwfb = new FrameBuffer(u0+w+20, v0, w, h);
 	hwfb->label("HW Framebuffer");
 	hwfb->show();
@@ -401,20 +401,24 @@ void Scene::DBG() {
 	{
 	PPC *ppc0 = new PPC(*ppc);
 	PPC *ppc1 = new PPC(*ppc);
-	ppc1->C = ppc1->C + vector(70.0f, 30.0f, 10.0f);
+	ppc1->C = ppc1->C + vector(300.0f, 30.0f, -300.0f);
 	vector lap = (tmeshes[1]->GetCenter() + tmeshes[2]->GetCenter())/2;
 	ppc1->PositionAndOrient(ppc1->C, lap, vector(0.0f, 1.0f, 0.0f));
-    int stepsN = 50;
+    int stepsN = 300;
     for (int si = 0; si < stepsN; si++) {
       ppc->SetByInterpolation(ppc0, ppc1, (float) si / (float) (stepsN-1));
-      Render();
+      //Render();
+	  hwfb->redraw();
       Fl::check();
 		scene->save(file.c_str());
+		/*
 		file = "Video/img";
 		file += to_string(save++);
 		file += ".tif";
+		*/
     }
 	}
+	return;
 
 	{
     PPC ppc1(*(lights[0]->L));
@@ -440,9 +444,11 @@ void Scene::DBG() {
 	  Render();
       Fl::check();
 		scene->save(file.c_str());
+		/*
 		file = "Video/img";
 		file += to_string(save++);
 		file += ".tif";
+		*/
     }
 	{
 	vector center = tmeshes[2]->GetCenter();
@@ -456,9 +462,11 @@ void Scene::DBG() {
 	  Render();
       Fl::check();
 		scene->save(file.c_str());
+		/*
 		file = "Video/img";
 		file += to_string(save++);
 		file += ".tif";
+		*/
     }
 
 	}

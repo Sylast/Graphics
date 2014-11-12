@@ -80,16 +80,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CGInterface.h" />
     <ClInclude Include="framebuffer.h" />
     <ClInclude Include="gui.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="ppc.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="tmesh.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CGInterface.cpp" />
     <ClCompile Include="framebuffer.cpp" />
     <ClCompile Include="gui.cxx" />
     <ClCompile Include="light.cpp" />
@@ -98,6 +101,38 @@
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="tmesh.cpp" />
     <ClCompile Include="vector.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FullShader.cg" />
+    <None Include="geometry\auditorium.bin" />
+    <None Include="geometry\bunny.bin" />
+    <None Include="geometry\DNA.bin" />
+    <None Include="geometry\happy2.bin" />
+    <None Include="geometry\happy4.bin" />
+    <None Include="geometry\teapot1K.bin" />
+    <None Include="geometry\teapot57K.bin" />
+    <None Include="geometry\terrain.bin" />
+    <None Include="ReflectionShader.cg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="TIFFimages\blur.tif" />
+    <Image Include="TIFFimages\Brick_Wall_Texture.tif" />
+    <Image Include="TIFFimages\bright.tif" />
+    <Image Include="TIFFimages\Circles.tif" />
+    <Image Include="TIFFimages\Contrast.tif" />
+    <Image Include="TIFFimages\dark.tif" />
+    <Image Include="TIFFimages\Destiny.tif" />
+    <Image Include="TIFFimages\edge.tif" />
+    <Image Include="TIFFimages\FLAG_T24.TIF" />
+    <Image Include="TIFFimages\GMARBLES.TIF" />
+    <Image Include="TIFFimages\MARBLES.TIF" />
+    <Image Include="TIFFimages\name.tif" />
+    <Image Include="TIFFimages\rgb.tif" />
+    <Image Include="TIFFimages\snapple.tif" />
+    <Image Include="TIFFimages\white.tif" />
+    <Image Include="TIFFimages\wirepot.tif" />
+    <Image Include="TIFFimages\Wood_Texture.tif" />
+    <Image Include="TIFFimages\XING_T24.TIF" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
