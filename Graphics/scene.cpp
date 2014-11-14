@@ -13,7 +13,7 @@ Scene::Scene() {
 	gui->show();
 
 	cgi = new CGInterface();
-	fsi = new FullShader();
+	shader = new ReflectionShader();
 
 	HWinit = false;
 
@@ -39,20 +39,22 @@ Scene::Scene() {
 	texName = new GLuint[texturesN];
 	char * name = "TIFFimages/Brick_Wall_Texture.tif";
 	textures[0] = new FrameBuffer(0,0,512,512);
-	openTexture(name, textures[0]);
+	textures[0]->SetChecker(200, BLACK, WHITE);
+	//openTexture(name, textures[0]);
 
 	tmeshesN = 4;
 	tmeshes = new TMesh*[tmeshesN];
 
 	vector center(0.0f, 0.0f, 0.0f);
-	vector dims(1000.0f, 25.0f, 1000.0f);
+	vector dims(1000.0f, 30.0f, 1000.0f);
 	unsigned int color = RED;
 	tmeshes[0] = new TMesh(center, dims, color, 0, 5.0);
 	tmeshes[0]->Position(vector(0.0f, -50.0f, -600.0f));
+	tmeshes[0]->Rotate(YAXIS, 90);
 
 	tmeshes[1] = new TMesh();
 	tmeshes[1]->LoadBin("geometry/teapot1k.bin");
-	vector newCenter = vector(-75.0f, -10.0f, -300.0f);
+	vector newCenter = vector(0.0f, 50.0f, -300.0f);
 	tmeshes[1]->Position(newCenter);
 	tmeshes[1]->RenderMode = MCI;
 	tmeshes[1]->shade = true;
@@ -76,7 +78,7 @@ Scene::Scene() {
 	
 	//tmeshes[0]->enabled = false;
 	//tmeshes[1]->enabled = false;
-	//tmeshes[2]->enabled = false;
+	tmeshes[2]->enabled = false;
 	tmeshes[3]->enabled = false;
 
 	lightsN = 2;
@@ -135,7 +137,7 @@ void Scene::RenderHW() {
 	// initialize GPU programming interfaces
 	if (cgi->needInit) {
 		cgi->PerSessionInit();
-		fsi->PerSessionInit(cgi);
+		shader->PerSessionInit(cgi);
 	}
 
 	float zNear = 1.0f;
@@ -147,15 +149,15 @@ void Scene::RenderHW() {
 		if( !tmeshes[tmi]->enabled )
 			continue;
 		if( tmeshes[tmi]->shade ) {
-			fsi->PerFrameInit();
-			fsi->BindPrograms();
+			shader->PerFrameInit();
+			shader->BindPrograms();
 			cgi->EnableProfiles();
 		}
 		
 		tmeshes[tmi]->RenderHW();
 
 		if( tmeshes[tmi]->shade ) {
-			fsi->PerFrameDisable();
+			shader->PerFrameDisable();
 			cgi->DisableProfiles();
 		}
 	}
@@ -350,6 +352,7 @@ void Scene::rasterShape( int x0, int y0, int x1, int y1, unsigned int) {
 
 int xOld, yOld;
 int FrameBuffer::handle(int event) {
+	vector colorV;
 	unsigned int color = BLACK;
 	switch(event) {
 	case FL_PUSH:
@@ -358,9 +361,9 @@ int FrameBuffer::handle(int event) {
 		return 1;
 
 	case FL_RELEASE:
-		scene->rasterShape( xOld, yOld, Fl::event_x(), Fl::event_y(), color );
-
+		//scene->rasterShape( xOld, yOld, Fl::event_x(), Fl::event_y(), color );
 		return 1;
+
 	case FL_KEYDOWN:
 		if (Fl::event_key(FL_Up)) {
 			scene->ppc->translate(PPC_UP, 10);

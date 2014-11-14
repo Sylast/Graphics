@@ -24,6 +24,7 @@ public:
  *loads geometry, vertex, and fragment
  */
 class FullShader {
+protected:
 	CGprogram geometryProgram;
 	CGprogram vertexProgram;
 	CGprogram fragmentProgram;
@@ -39,14 +40,18 @@ public:
 	void PerFrameDisable();
 };
 
-class ReflectionShader {
-	CGprogram vertexProgram;
+class ReflectionShader : public FullShader {
+	CGparameter fragmentEye;
+	CGparameter fragmentQuadNormal;
+	CGparameter fragmentQuadCenter;
+	CGparameter fragmentQuadW;
+	CGparameter fragmentQuadL;
+	CGparameter fragmentQuadAxis;
+	CGparameter fragmentTexture;
 
 public:
 	ReflectionShader() {};
 	bool PerSessionInit(CGInterface *cgi);
-	void BindPrograms();
 	void PerFrameInit();
-	void PerFrameDisable();
 };
 

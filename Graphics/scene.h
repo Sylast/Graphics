@@ -26,7 +26,7 @@ class Scene {
 public:
   
   CGInterface *cgi; 
-  FullShader *fsi;
+  ReflectionShader *shader;
   GUI *gui;
   FrameBuffer *fb;
   FrameBuffer *hwfb;

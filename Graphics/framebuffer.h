@@ -13,6 +13,9 @@ public:
 	int w, h;
 	bool isHW;
 	FrameBuffer(int u0, int v0, int _w, int _h);
+
+	unsigned int GetColor(int x, int y);
+
 	void draw();
 	void drawHW();
 	void Set(unsigned int bgr);

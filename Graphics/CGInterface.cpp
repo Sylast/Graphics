@@ -31,7 +31,6 @@ void CGInterface::PerSessionInit() {
 	cout << "Infor: Latest GP Profile Supported: " << cgGetProfileString(latestGeometryProfile) << endl;
 
 	geometryCGprofile = latestGeometryProfile;
-
 	cout << "Infor: Latest VP Profile Supported: " << cgGetProfileString(latestVertexProfile) << endl;
 	cout << "Infor: Latest FP Profile Supported: " << cgGetProfileString(latestPixelProfile) << endl;
 
@@ -119,4 +118,44 @@ void FullShader::BindPrograms() {
 #ifdef GEOM_SHADER
 	cgGLBindProgram( geometryProgram );
 #endif
+}
+
+bool ReflectionShader::PerSessionInit(CGInterface *cgi) {
+
+	FullShader::PerSessionInit(cgi);
+	fragmentProgram = cgCreateProgramFromFile(cgi->cgContext, CG_SOURCE, 
+		"CG/ReflectionShader.cg", cgi->pixelCGprofile, "FragmentMain", NULL);
+	if (fragmentProgram == NULL)  {
+		CGerror Error = cgGetError();
+		cerr << "Shader One Fragment Program COMPILE ERROR: " << cgGetErrorString(Error) << endl;
+		cerr << cgGetLastListing(cgi->cgContext) << endl << endl;
+		return false;
+	}
+	cgGLLoadProgram(fragmentProgram);
+
+	fragmentEye =			cgGetNamedParameter( fragmentProgram, "eye" );
+	fragmentQuadNormal =	cgGetNamedParameter( fragmentProgram, "quadN" );
+	fragmentQuadCenter =	cgGetNamedParameter( fragmentProgram, "quadC" );
+	fragmentQuadW =			cgGetNamedParameter( fragmentProgram, "quadW" );
+	fragmentQuadL =			cgGetNamedParameter( fragmentProgram, "quadL" );
+	fragmentQuadAxis =		cgGetNamedParameter( fragmentProgram, "quadAxis" );
+	fragmentTexture =		cgGetNamedParameter( fragmentProgram, "texture" );
+
+	return true;
+
+}
+
+void ReflectionShader::PerFrameInit() {
+
+	FullShader::PerFrameInit();
+	vector center = scene->tmeshes[0]->GetCenter();
+	cgGLSetParameter3f( fragmentEye, 
+		scene->ppc->C[0], scene->ppc->C[1], scene->ppc->C[2] );
+	cgGLSetParameter3f( fragmentQuadNormal, 0, 1, 0 );
+	cgGLSetParameter3f( fragmentQuadCenter,	center[0], center[1]+15, center[2]); 
+	cgGLSetParameter1f( fragmentQuadW, scene->tmeshes[0]->dims[2] );	
+	cgGLSetParameter1f( fragmentQuadL, scene->tmeshes[0]->dims[0] );	
+	cgGLSetParameter3f( fragmentQuadAxis, 1.0f, 0.0f, 1.0f );
+	cgGLSetTextureParameter( fragmentTexture, scene->texName[0] );
+
 }

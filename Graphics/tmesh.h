@@ -25,10 +25,11 @@ public:
   AABB *aabb;
   int texIndex;
   bool shade;
+  vector dims;
 
   TMesh() : verts(0), vertsN(0), tris(0), trisN(0), normals(0), 
 			cols(0), tcs(0), aabb(0), enabled(false), RenderMode(0),
-			texIndex(-1), shade(false){};
+			texIndex(-1), shade(false), dims(){};
   TMesh(vector center, vector dims, unsigned int color);
   TMesh(vector center, vector dims, unsigned int color, int texIndex, float tile);
 

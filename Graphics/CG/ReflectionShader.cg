@@ -1,0 +1,57 @@
+
+struct VertexDataInput {
+	float4 vertex:	POSITION;
+	float3 normal:	NORMAL;
+	float3 color:	COLOR;
+};
+
+struct VertexDataOutput {
+	float4 projv:	POSITION;
+	float4 color:	COLOR;
+	float3 vertex:	TEXCOORD0;
+	float3 normal:	TEXCOORD1;
+};
+
+struct PixelDataOutput {
+	float4 color:	COLOR0;
+};
+
+PixelDataOutput FragmentMain( VertexDataOutput pdi, 
+	uniform float3 eye, uniform float3 quadN, uniform float3 quadCenter, 
+	uniform float quadW, uniform float quadL, uniform float3 quadAxis,
+	uniform sampler2D texture  ) {
+
+	PixelDataOutput ret;
+	//Get rv = Reflection Vector
+	float3 ev = normalize(eye - pdi.vertex);
+	float3 n = normalize(pdi.normal);
+	float3 rv = n*dot(n, ev)*2.0f - ev;
+	rv = normalize(rv);
+
+	float l = quadL;
+	float w = quadW;
+
+	float3 qrp = (quadCenter - pdi.vertex );
+	float t = dot(qrp, quadN)/dot(quadN, rv);
+
+	float3 top = float3(quadCenter-quadAxis*(l/2));
+	float3 bot = float3(quadCenter+quadAxis*(l/2));
+	float3 left = float3(quadCenter-quadAxis*(w/2));
+	float3 right = float3(quadCenter+quadAxis*(w/2));
+	float3 p = pdi.vertex + rv * t;
+	if( t >= 0 ){
+		if(p.x < left.x || p.x > right.x || p.z > bot.z || p.z < top.z) {
+			ret.color.rgb = float3(1.0f, 0.0f, 0.0f);
+		}else {
+			float2 coord = p.xz;
+			float sf = max( bot, right);
+			ret.color = tex2D(texture, coord/sf);
+		}
+	}else{
+		ret.color.rgb = float3(0.5f,0.0f,0.0f);
+	}
+	
+	//ret.color.rgb = (t + float3(1.0f, 1.0f, 1.0f))/2.0f;
+	return ret;
+
+}

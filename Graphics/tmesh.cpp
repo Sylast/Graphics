@@ -9,6 +9,7 @@ TMesh::TMesh(vector center, vector dims, unsigned int color) {
 
 	enabled = true;
 	shade = false;
+	this->dims = dims;
 	vertsN = 8;
 	verts = new vector[vertsN];
 	cols = new vector[vertsN];
@@ -92,6 +93,7 @@ TMesh::TMesh(vector center, vector dims, unsigned int color, int texN, float til
 
 	enabled = true;
 	shade = false;
+	this->dims = dims;
 	vertsN = 8*3;
 	trisN = 12;
 	verts = new vector[vertsN];
