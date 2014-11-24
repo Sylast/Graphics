@@ -418,6 +418,11 @@ int FrameBuffer::handle(int event) {
 
 void Scene::DBG() {
 
+	{
+	enviromap(vector(0.0f,0.0f,0.0f), vector(0.0f,0.0f,-1.0f));
+	return;
+	}
+
 	int save = 0;
 	string file = "Video/img";
 	file += to_string(save);

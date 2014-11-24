@@ -13,6 +13,7 @@
 #include "ppc.h"
 #include "tmesh.h"
 #include "light.h"
+#include "enviromap.h"
 #include "LIBTIFF\libtiff.h"
 #include <string>
 
