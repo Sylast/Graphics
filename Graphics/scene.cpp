@@ -79,7 +79,7 @@ Scene::Scene() {
 	tmeshes[3]->Rotate(yaxis, 180.0f);
 	tmeshes[3]->Scale(200);
 	
-	//tmeshes[0]->enabled = false;
+	tmeshes[0]->enabled = false;
 	//tmeshes[1]->enabled = false;
 	tmeshes[2]->enabled = false;
 	//tmeshes[3]->enabled = false;
@@ -419,7 +419,13 @@ int FrameBuffer::handle(int event) {
 void Scene::DBG() {
 
 	{
-	enviromap(vector(0.0f,0.0f,0.0f), vector(0.0f,0.0f,-1.0f));
+	vector toNorth(0.0f, 0.0f, -1.0f);
+	vector testV(-1.0f, .5f, -1.0f);
+	vector center(0.0f,0.0f,0.0f);
+	enviromap *cube = new enviromap();
+	unsigned int c = cube->getColor(testV);
+	cout << c << endl;
+	//cube->save();
 	return;
 	}
 

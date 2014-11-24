@@ -3,18 +3,28 @@
 #include "scene.h"
 
 //Initialize the enviromap at center of world facing NORTH
-enviromap::enviromap(vector center, vector toNorth) {
+enviromap::enviromap(vector center, vector vN) {
 
-	world = center;
+	worldCenter = center;
+	toNorth = vN.norm();
+	toEast = toSky = toNorth;
+	toEast.rotateVector(YAXIS, -90.0f);
+	toSky.rotateVector(XAXIS, 90.0f);
 	float wh = 512.0f;
 	float hfov = 90.0f;
-	ppc = new PPC(hfov, wh, wh); 
-	ppc->PositionAndOrient(world, world+toNorth, YAXIS);
 
 	faces = new FrameBuffer*[6];
+	faceCams = new PPC*[6];
 	for( int fi = 0; fi < 6; fi++ ) {
 		faces[fi] = new FrameBuffer(0,0, wh, wh);
+		faceCams[fi] = new PPC(hfov, wh, wh); 
 	}
+	faceCams[EM_NORTH]->PositionAndOrient(worldCenter, worldCenter+toNorth, YAXIS);
+	faceCams[EM_WEST]->PositionAndOrient(worldCenter, worldCenter-toEast, YAXIS);
+	faceCams[EM_SOUTH]->PositionAndOrient(worldCenter, worldCenter-toNorth, YAXIS);
+	faceCams[EM_EAST]->PositionAndOrient(worldCenter, worldCenter+toEast, YAXIS);
+	faceCams[EM_SKY]->PositionAndOrient(worldCenter, worldCenter+toSky, ZAXIS);
+	faceCams[EM_GROUND]->PositionAndOrient(worldCenter, worldCenter-toSky, -ZAXIS);
 
 	Render();
 	
@@ -24,30 +34,44 @@ enviromap::enviromap(vector center, vector toNorth) {
 
 unsigned int enviromap::getColor( vector vd ) {
 
+	vector vdn = vd.norm();
+	vector colorPix;
+	PPC *currFaceCam;
+	FrameBuffer *currFace;
+	if( faceCams[EM_NORTH]->Project(vdn, colorPix) ){
+		currFace = faces[EM_NORTH];	
+		currFaceCam = faceCams[EM_NORTH];	
+	}else if( faceCams[EM_WEST]->Project(vdn, colorPix) ){
+		currFace = faces[EM_WEST];	
+		currFaceCam = faceCams[EM_WEST];	
+	}else if( faceCams[EM_SOUTH]->Project(vdn, colorPix) ){
+		currFace = faces[EM_SOUTH];	
+		currFaceCam = faceCams[EM_SOUTH];	
+	}else if( faceCams[EM_EAST]->Project(vdn, colorPix) ){
+		currFace = faces[EM_EAST];	
+		currFaceCam = faceCams[EM_EAST];	
+	}else if( faceCams[EM_SKY]->Project(vdn, colorPix) ){
+		currFace = faces[EM_SKY];	
+		currFaceCam = faceCams[EM_SKY];	
+	}else if( faceCams[EM_GROUND]->Project(vdn, colorPix) ){
+		currFace = faces[EM_GROUND];	
+		currFaceCam = faceCams[EM_GROUND];	
+	}
+
+	cout << colorPix << endl;
+	return currFace->Get(colorPix[0], colorPix[1]);
+
 }
 
 void enviromap::Render() {
 
-	int fbi = 0;
-	while (fbi < 4) {
-		scene->tmeshes[3]->RenderFilled(ppc, faces[fbi++], BLACK, scene->lightsN,
+	for( int fbi = 0; fbi < 6; fbi++ ) {
+		scene->tmeshes[3]->RenderFilled(faceCams[fbi], faces[fbi], BLACK, scene->lightsN,
 										  scene->lights, scene->ka, 
 										  scene->textures[scene->tmeshes[3]->texIndex],
 										  scene->tmeshes[3]->RenderMode);
-		ppc->rotate(PPC_PAN, 90.0);
 	}
-		ppc->rotate(PPC_TILT, 90.0);
-		scene->tmeshes[3]->RenderFilled(ppc, faces[fbi++], BLACK, scene->lightsN,
-										  scene->lights, scene->ka, 
-										  scene->textures[scene->tmeshes[3]->texIndex],
-										  scene->tmeshes[3]->RenderMode);
-		ppc->rotate(PPC_TILT, 180.0);
-		scene->tmeshes[3]->RenderFilled(ppc, faces[fbi++], BLACK, scene->lightsN,
-										  scene->lights, scene->ka, 
-										  scene->textures[scene->tmeshes[3]->texIndex],
-										  scene->tmeshes[3]->RenderMode);
 
-	save();
 	//Set up to only render meshes that are faraway. for now just single one
 	/*
 	float MAPDIS = 1000.0f;
