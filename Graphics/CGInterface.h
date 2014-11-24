@@ -42,11 +42,10 @@ public:
 
 class ReflectionShader : public FullShader {
 	CGparameter fragmentEye;
-	CGparameter fragmentQuadNormal;
-	CGparameter fragmentQuadCenter;
-	CGparameter fragmentQuadW;
-	CGparameter fragmentQuadL;
-	CGparameter fragmentQuadAxis;
+	CGparameter fragmentv0;
+	CGparameter fragmentv1;
+	CGparameter fragmentv2;
+	CGparameter fragmentv3;
 	CGparameter fragmentTexture;
 
 public:

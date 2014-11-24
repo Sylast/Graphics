@@ -1,0 +1,37 @@
+
+struct VertexDataInput {
+    float4 vertex:	POSITION;
+    float3 normal:	NORMAL;
+    float3 color:	COLOR;
+}
+;
+struct VertexDataOutput {
+    float4 projv:	POSITION;
+    float4 color:	COLOR;
+    float3 vertex:	TEXCOORD0;
+    float3 normal:	TEXCOORD1;
+}
+;
+struct PixelDataOutput {
+    float4 color:	COLOR0;
+}
+
+VertexDataOutput VertexMain( VertexDataInput vdi, uniform float4x4 modelViewProj,
+							 uniform float3 eye ) {
+	
+	VertexDataOutput ret;
+	ret.color = float4(vdi.color, 1.0f);
+	ret.vertex = vdi.vertex.xyz;
+	ret.normal = vdi.normal;
+
+	ret.projv = mul(modelViewProj, vdi.vertex);
+
+	return ret;
+}
+
+PixelDataOutput FragmentMain( VertexDataOutput pdi, uniform float reflectivity,
+							  uniform sampler2D texture, uniform samplerCUBE envioMap ) {
+	PixelDataOutput ret;
+	ret.color = pdi.color;
+	return ret;
+}

@@ -118,6 +118,9 @@
     <None Include="CG\ReflectionShader.cg">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="enviromap.cg">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="TIFFimages\blur.tif">

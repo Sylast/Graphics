@@ -134,11 +134,10 @@ bool ReflectionShader::PerSessionInit(CGInterface *cgi) {
 	cgGLLoadProgram(fragmentProgram);
 
 	fragmentEye =			cgGetNamedParameter( fragmentProgram, "eye" );
-	fragmentQuadNormal =	cgGetNamedParameter( fragmentProgram, "quadN" );
-	fragmentQuadCenter =	cgGetNamedParameter( fragmentProgram, "quadC" );
-	fragmentQuadW =			cgGetNamedParameter( fragmentProgram, "quadW" );
-	fragmentQuadL =			cgGetNamedParameter( fragmentProgram, "quadL" );
-	fragmentQuadAxis =		cgGetNamedParameter( fragmentProgram, "quadAxis" );
+	fragmentv0 =			cgGetNamedParameter( fragmentProgram, "v0" );
+	fragmentv1 =			cgGetNamedParameter( fragmentProgram, "v1" );
+	fragmentv2 =			cgGetNamedParameter( fragmentProgram, "v2" );
+	fragmentv3 =			cgGetNamedParameter( fragmentProgram, "v3" );
 	fragmentTexture =		cgGetNamedParameter( fragmentProgram, "texture" );
 
 	return true;
@@ -151,11 +150,18 @@ void ReflectionShader::PerFrameInit() {
 	vector center = scene->tmeshes[0]->GetCenter();
 	cgGLSetParameter3f( fragmentEye, 
 		scene->ppc->C[0], scene->ppc->C[1], scene->ppc->C[2] );
-	cgGLSetParameter3f( fragmentQuadNormal, 0, 1, 0 );
-	cgGLSetParameter3f( fragmentQuadCenter,	center[0], center[1]+15, center[2]); 
-	cgGLSetParameter1f( fragmentQuadW, scene->tmeshes[0]->dims[2] );	
-	cgGLSetParameter1f( fragmentQuadL, scene->tmeshes[0]->dims[0] );	
-	cgGLSetParameter3f( fragmentQuadAxis, 1.0f, 0.0f, 1.0f );
+	cgGLSetParameter3f( fragmentv0,	scene->tmeshes[0]->verts[18][0], 
+									scene->tmeshes[0]->verts[18][1], 
+									scene->tmeshes[0]->verts[18][2]); 
+	cgGLSetParameter3f( fragmentv1,	scene->tmeshes[0]->verts[0][0], 
+									scene->tmeshes[0]->verts[0][1], 
+									scene->tmeshes[0]->verts[0][2]); 
+	cgGLSetParameter3f( fragmentv2,	scene->tmeshes[0]->verts[12][0], 
+									scene->tmeshes[0]->verts[12][1], 
+									scene->tmeshes[0]->verts[12][2]); 
+	cgGLSetParameter3f( fragmentv3,	scene->tmeshes[0]->verts[6][0], 
+									scene->tmeshes[0]->verts[6][1], 
+									scene->tmeshes[0]->verts[6][2]); 
 	cgGLSetTextureParameter( fragmentTexture, scene->texName[0] );
 
 }

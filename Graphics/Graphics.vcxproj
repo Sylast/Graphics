@@ -105,6 +105,7 @@
   <ItemGroup>
     <None Include="CG\FullShader.cg" />
     <None Include="CG\ReflectionShader.cg" />
+    <None Include="enviromap.cg" />
     <None Include="geometry\auditorium.bin" />
     <None Include="geometry\bunny.bin" />
     <None Include="geometry\DNA.bin" />

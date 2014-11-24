@@ -33,6 +33,7 @@ Scene::Scene() {
 
 	float hfov = 55.0f;
 	ppc = new PPC(hfov, w, h);
+	ppc->translate(PPC_BACKWARD, 300);
 
 	texturesN = 1;
 	textures = new FrameBuffer*[texturesN];
@@ -46,15 +47,15 @@ Scene::Scene() {
 	tmeshes = new TMesh*[tmeshesN];
 
 	vector center(0.0f, 0.0f, 0.0f);
-	vector dims(1000.0f, 30.0f, 1000.0f);
+	vector dims(300.0f, 30.0f, 300.0f);
 	unsigned int color = RED;
 	tmeshes[0] = new TMesh(center, dims, color, 0, 5.0);
-	tmeshes[0]->Position(vector(0.0f, -50.0f, -600.0f));
-	tmeshes[0]->Rotate(YAXIS, 90);
+	tmeshes[0]->Position(vector(0.0f, -50.0f, 0.0f));
+	//tmeshes[0]->Rotate(YAXIS, 90);
 
 	tmeshes[1] = new TMesh();
 	tmeshes[1]->LoadBin("geometry/teapot1k.bin");
-	vector newCenter = vector(0.0f, 50.0f, -300.0f);
+	vector newCenter = vector(0.0f, 10.0f, 0.0f);
 	tmeshes[1]->Position(newCenter);
 	tmeshes[1]->RenderMode = MCI;
 	tmeshes[1]->shade = true;
@@ -62,7 +63,7 @@ Scene::Scene() {
 	tmeshes[2] = new TMesh();
 	tmeshes[2]->LoadBin("geometry/teapot1K.bin");
 	tmeshes[2]->RenderMode = WF;
-	newCenter = vector(75.0f, 3.0f, -300.0f);
+	newCenter = vector(75.0f, 3.0f, 0.0f);
 	tmeshes[2]->Scale(1.5f);
 	tmeshes[2]->Position(newCenter);
 	tmeshes[2]->Rotate(yaxis, 50.0f);
@@ -71,7 +72,7 @@ Scene::Scene() {
 	tmeshes[3] = new TMesh();
 	tmeshes[3]->LoadBin("geometry/teapot1K.bin");
 	tmeshes[3]->RenderMode = MCI;
-	newCenter = vector(0.0f, 30.0f, -150.0f);
+	newCenter = vector(0.0f, 30.0f, 0.0f);
 	tmeshes[3]->Scale(0.5f);
 	tmeshes[3]->Position(newCenter);
 	tmeshes[3]->Rotate(xaxis, 90.0f);
@@ -424,15 +425,18 @@ void Scene::DBG() {
 	file += to_string(save++);
 	file += ".tif";
 	{
+	vector center = tmeshes[1]->GetCenter();
 	PPC *ppc0 = new PPC(*ppc);
 	PPC *ppc1 = new PPC(*ppc);
-	ppc1->C = ppc1->C + vector(300.0f, 30.0f, -300.0f);
-	vector lap = (tmeshes[1]->GetCenter() + tmeshes[2]->GetCenter())/2;
+	float dis = (center - ppc1->C).length();
+	ppc1->translate(PPC_RIGHT, dis);
+	ppc1->translate(PPC_FORWARD, dis);
+	vector lap = center;
 	ppc1->PositionAndOrient(ppc1->C, lap, vector(0.0f, 1.0f, 0.0f));
-    int stepsN = 300;
+    int stepsN = 100;
     for (int si = 0; si < stepsN; si++) {
       ppc->SetByInterpolation(ppc0, ppc1, (float) si / (float) (stepsN-1));
-      //Render();
+	  //Render();
 	  hwfb->redraw();
       Fl::check();
 		scene->save(file.c_str());

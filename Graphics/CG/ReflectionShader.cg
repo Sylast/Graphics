@@ -1,57 +1,68 @@
 
 struct VertexDataInput {
-	float4 vertex:	POSITION;
-	float3 normal:	NORMAL;
-	float3 color:	COLOR;
-};
-
+    float4 vertex:	POSITION;
+    float3 normal:	NORMAL;
+    float3 color:	COLOR;
+}
+;
 struct VertexDataOutput {
-	float4 projv:	POSITION;
-	float4 color:	COLOR;
-	float3 vertex:	TEXCOORD0;
-	float3 normal:	TEXCOORD1;
-};
-
+    float4 projv:	POSITION;
+    float4 color:	COLOR;
+    float3 vertex:	TEXCOORD0;
+    float3 normal:	TEXCOORD1;
+}
+;
 struct PixelDataOutput {
-	float4 color:	COLOR0;
-};
-
-PixelDataOutput FragmentMain( VertexDataOutput pdi, 
-	uniform float3 eye, uniform float3 quadN, uniform float3 quadCenter, 
-	uniform float quadW, uniform float quadL, uniform float3 quadAxis,
+    float4 color:	COLOR0;
+}
+;
+PixelDataOutput FragmentMain( VertexDataOutput pdi, uniform float3 eye, 
+	uniform float3 v0, uniform float3 v1, uniform float3 v2, uniform float3 v3,
 	uniform sampler2D texture  ) {
 
-	PixelDataOutput ret;
-	//Get rv = Reflection Vector
+    PixelDataOutput ret;
+    //Get rv = Reflection Vector
 	float3 ev = normalize(eye - pdi.vertex);
-	float3 n = normalize(pdi.normal);
-	float3 rv = n*dot(n, ev)*2.0f - ev;
-	rv = normalize(rv);
-
-	float l = quadL;
-	float w = quadW;
-
-	float3 qrp = (quadCenter - pdi.vertex );
-	float t = dot(qrp, quadN)/dot(quadN, rv);
-
-	float3 top = float3(quadCenter-quadAxis*(l/2));
-	float3 bot = float3(quadCenter+quadAxis*(l/2));
-	float3 left = float3(quadCenter-quadAxis*(w/2));
-	float3 right = float3(quadCenter+quadAxis*(w/2));
-	float3 p = pdi.vertex + rv * t;
-	if( t >= 0 ){
-		if(p.x < left.x || p.x > right.x || p.z > bot.z || p.z < top.z) {
-			ret.color.rgb = float3(1.0f, 0.0f, 0.0f);
-		}else {
-			float2 coord = p.xz;
-			float sf = max( bot, right);
-			ret.color = tex2D(texture, coord/sf);
-		}
-	}else{
-		ret.color.rgb = float3(0.5f,0.0f,0.0f);
-	}
+    float3 n = normalize(pdi.normal);
+    float3 rv = n*dot(n, ev)*2.0f - ev;
+    rv = normalize(rv);
 	
-	//ret.color.rgb = (t + float3(1.0f, 1.0f, 1.0f))/2.0f;
-	return ret;
+    float3 P = pdi.vertex;
+    float3 xaxis = (v2-v0);
+    float3 yaxis = (v1-v0);
+    float3 planeNormal = cross(yaxis, xaxis);
+    float3 rayDirection = normalize(rv);
+    float w = length(xaxis);
+    float h = length(yaxis);
+	xaxis = normalize(xaxis);
+	yaxis = normalize(yaxis);
+    float t = dot((v0 - P), planeNormal) 
+		/ dot(rayDirection, planeNormal);
+    float3 intPoint = P + rayDirection * t;
+    float d = length(intPoint - P);
+    float maxD = 10.0f;
+    float reflectiveIndex = (d > maxD) ? 0.0f : 1.0f - d / maxD;
+    float x = dot((intPoint - v0), xaxis);
+    float y = dot((intPoint - v0), yaxis);
 
+    if (t < 0.0f) {
+        //ret.color.rgb = float3(1.0f, 0.0f, 0.0f); // no intersection with plane
+		ret.color.rgb = pdi.color.rgb;
+    } else {
+		if (x < 0.0f || x > w || y < 0.0f || y > h) {
+			//ret.color.rgb = float3(1.0f, 1.0f, 0.0f); // intersection with plane but not with quad
+			ret.color.rgb = pdi.color.rgb;
+        } else {
+			//ret.color.rgb = float3(0.0f, 1.0f, 0.0f); // intersection with quad
+			float3 reflectiveComponent;
+			reflectiveComponent = tex2D(texture, float2(x/w*5, y/h*5));
+            ret.color.rgb = (pdi.color.rgb + reflectiveComponent)/2.0f;
+			//ret.color.rgb = pdi.color.rgb * (1.0f - reflectiveIndex) + 
+			reflectiveComponent * reflectiveIndex;
+        }
+
+  }
+
+	return ret;
 }
+
