@@ -18,7 +18,7 @@ struct PixelDataOutput {
 ;
 PixelDataOutput FragmentMain( VertexDataOutput pdi, uniform float3 eye, 
 	uniform float3 v0, uniform float3 v1, uniform float3 v2, uniform float3 v3,
-	uniform sampler2D texture  ) {
+	uniform sampler2D texture, uniform float tile  ) {
 
     PixelDataOutput ret;
     //Get rv = Reflection Vector
@@ -55,7 +55,7 @@ PixelDataOutput FragmentMain( VertexDataOutput pdi, uniform float3 eye,
         } else {
 			//ret.color.rgb = float3(0.0f, 1.0f, 0.0f); // intersection with quad
 			float3 reflectiveComponent;
-			reflectiveComponent = tex2D(texture, float2(x/w*5, y/h*5));
+			reflectiveComponent = tex2D(texture, float2(x/w*tile, y/h*tile));
             ret.color.rgb = (pdi.color.rgb + reflectiveComponent)/2.0f;
 			//ret.color.rgb = pdi.color.rgb * (1.0f - reflectiveIndex) + 
 			reflectiveComponent * reflectiveIndex;

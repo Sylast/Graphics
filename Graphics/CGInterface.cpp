@@ -139,6 +139,7 @@ bool ReflectionShader::PerSessionInit(CGInterface *cgi) {
 	fragmentv2 =			cgGetNamedParameter( fragmentProgram, "v2" );
 	fragmentv3 =			cgGetNamedParameter( fragmentProgram, "v3" );
 	fragmentTexture =		cgGetNamedParameter( fragmentProgram, "texture" );
+	fragmentTextureTile =	cgGetNamedParameter( fragmentProgram, "tile" );
 
 	return true;
 
@@ -163,5 +164,6 @@ void ReflectionShader::PerFrameInit() {
 									scene->tmeshes[0]->verts[6][1], 
 									scene->tmeshes[0]->verts[6][2]); 
 	cgGLSetTextureParameter( fragmentTexture, scene->texName[0] );
+	cgGLSetParameter1f( fragmentTextureTile, scene->tmeshes[0]->tcs[20] );
 
 }

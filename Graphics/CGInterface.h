@@ -47,6 +47,7 @@ class ReflectionShader : public FullShader {
 	CGparameter fragmentv2;
 	CGparameter fragmentv3;
 	CGparameter fragmentTexture;
+	CGparameter fragmentTextureTile;
 
 public:
 	ReflectionShader() {};

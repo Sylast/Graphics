@@ -33,24 +33,24 @@ Scene::Scene() {
 
 	float hfov = 55.0f;
 	ppc = new PPC(hfov, w, h);
-	ppc->translate(PPC_BACKWARD, 30);
+	ppc->translate(PPC_BACKWARD, 20);
 
 	texturesN = 1;
 	textures = new FrameBuffer*[texturesN];
 	texName = new GLuint[texturesN];
 	char * name = "TIFFimages/Brick_Wall_Texture.tif";
 	textures[0] = new FrameBuffer(0,0,512,512);
-	textures[0]->SetChecker(200, BLACK, WHITE);
+	textures[0]->SetChecker(64, BLACK, WHITE);
 	//openTexture(name, textures[0]);
 
 	tmeshesN = 4;
 	tmeshes = new TMesh*[tmeshesN];
 
 	vector center(0.0f, 0.0f, 0.0f);
-	vector dims(10.0f, 30.0f, 10.0f);
+	vector dims(10.0f, 0.0f, 10.0f);
 	unsigned int color = RED;
-	tmeshes[0] = new TMesh(center, dims, color, 0, 5.0);
-	tmeshes[0]->Position(vector(0.0f, -10.0f, 0.0f));
+	tmeshes[0] = new TMesh(center, dims, color, 0, 2.0);
+	tmeshes[0]->Position(vector(0.0f, -3.0f, 0.0f));
 	//tmeshes[0]->Rotate(YAXIS, 90);
 
 	tmeshes[1] = new TMesh();
@@ -79,7 +79,7 @@ Scene::Scene() {
 	tmeshes[3]->Rotate(yaxis, 180.0f);
 	tmeshes[3]->Scale(200);
 	
-	tmeshes[0]->enabled = false;
+	//tmeshes[0]->enabled = false;
 	//tmeshes[1]->enabled = false;
 	tmeshes[2]->enabled = false;
 	//tmeshes[3]->enabled = false;
@@ -369,22 +369,22 @@ int FrameBuffer::handle(int event) {
 
 	case FL_KEYDOWN:
 		if (Fl::event_key(FL_Up)) {
-			scene->ppc->translate(PPC_UP, 10);
+			scene->ppc->translate(PPC_UP, 1);
 			scene->Render();
 		}else if(Fl::event_key(FL_Down)) {
-			scene->ppc->translate(PPC_DOWN, 10);
+			scene->ppc->translate(PPC_DOWN, 1);
 			scene->Render();
 		}else if(Fl::event_key(FL_Left)) {
-			scene->ppc->translate(PPC_LEFT, 10);
+			scene->ppc->translate(PPC_LEFT, 1);
 			scene->Render();
 		}else if(Fl::event_key(FL_Right)) {
-			scene->ppc->translate(PPC_RIGHT, 10);
+			scene->ppc->translate(PPC_RIGHT, 1);
 			scene->Render();
 		}else if(Fl::event_key(FL_Page_Up)) {
-			scene->ppc->translate(PPC_FORWARD, 10);
+			scene->ppc->translate(PPC_FORWARD, 1);
 			scene->Render();
 		}else if(Fl::event_key(FL_Page_Down)) {
-			scene->ppc->translate(PPC_BACKWARD, 10);
+			scene->ppc->translate(PPC_BACKWARD, 1);
 			scene->Render();
 		}else if(Fl::event_key('a')) {
 			scene->ppc->rotate(PPC_PAN, 1);
