@@ -81,6 +81,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CGInterface.h" />
+    <ClInclude Include="enviromap.h" />
     <ClInclude Include="framebuffer.h" />
     <ClInclude Include="gui.h" />
     <ClInclude Include="light.h" />
@@ -93,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CGInterface.cpp" />
+    <ClCompile Include="enviromap.cpp" />
     <ClCompile Include="framebuffer.cpp" />
     <ClCompile Include="gui.cxx" />
     <ClCompile Include="light.cpp" />

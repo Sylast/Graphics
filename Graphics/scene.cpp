@@ -24,7 +24,7 @@ Scene::Scene() {
 	int h = sci*240;
 	fb = new FrameBuffer(u0, v0, w, h);
 	fb->label("SW Framebuffer");
-	//fb->show();
+	fb->show();
 	hwfb = new FrameBuffer(u0+w+20, v0, w, h);
 	hwfb->label("HW Framebuffer");
 	hwfb->show();
@@ -436,8 +436,8 @@ void Scene::DBG() {
     int stepsN = 100;
     for (int si = 0; si < stepsN; si++) {
       ppc->SetByInterpolation(ppc0, ppc1, (float) si / (float) (stepsN-1));
-	  //Render();
-	  hwfb->redraw();
+	  Render();
+	  //hwfb->redraw();
       Fl::check();
 		scene->save(file.c_str());
 		/*
