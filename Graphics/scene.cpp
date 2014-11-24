@@ -33,7 +33,7 @@ Scene::Scene() {
 
 	float hfov = 55.0f;
 	ppc = new PPC(hfov, w, h);
-	ppc->translate(PPC_BACKWARD, 300);
+	ppc->translate(PPC_BACKWARD, 30);
 
 	texturesN = 1;
 	textures = new FrameBuffer*[texturesN];
@@ -47,16 +47,17 @@ Scene::Scene() {
 	tmeshes = new TMesh*[tmeshesN];
 
 	vector center(0.0f, 0.0f, 0.0f);
-	vector dims(300.0f, 30.0f, 300.0f);
+	vector dims(10.0f, 30.0f, 10.0f);
 	unsigned int color = RED;
 	tmeshes[0] = new TMesh(center, dims, color, 0, 5.0);
-	tmeshes[0]->Position(vector(0.0f, -50.0f, 0.0f));
+	tmeshes[0]->Position(vector(0.0f, -10.0f, 0.0f));
 	//tmeshes[0]->Rotate(YAXIS, 90);
 
 	tmeshes[1] = new TMesh();
 	tmeshes[1]->LoadBin("geometry/teapot1k.bin");
-	vector newCenter = vector(0.0f, 10.0f, 0.0f);
+	vector newCenter = vector(0.0f, 0.0f, 0.0f);
 	tmeshes[1]->Position(newCenter);
+	tmeshes[1]->Scale(.1);
 	tmeshes[1]->RenderMode = MCI;
 	tmeshes[1]->shade = true;
 	
@@ -70,27 +71,28 @@ Scene::Scene() {
 	tmeshes[2]->shade = true;
 	
 	tmeshes[3] = new TMesh();
-	tmeshes[3]->LoadBin("geometry/teapot1K.bin");
+	tmeshes[3]->LoadBin("geometry/auditorium.bin");
 	tmeshes[3]->RenderMode = MCI;
-	newCenter = vector(0.0f, 30.0f, 0.0f);
-	tmeshes[3]->Scale(0.5f);
+	newCenter = vector(0.0f, 0.0f, 0.0f);
 	tmeshes[3]->Position(newCenter);
-	tmeshes[3]->Rotate(xaxis, 90.0f);
+	tmeshes[3]->Rotate(xaxis, -90.0f);
+	tmeshes[3]->Rotate(yaxis, 180.0f);
+	tmeshes[3]->Scale(200);
 	
-	//tmeshes[0]->enabled = false;
+	tmeshes[0]->enabled = false;
 	//tmeshes[1]->enabled = false;
 	tmeshes[2]->enabled = false;
-	tmeshes[3]->enabled = false;
+	//tmeshes[3]->enabled = false;
 
 	lightsN = 2;
-	ka = 0.1f;
+	ka = 1.0f;
 	lights = new Light*[lightsN];
 	vector lp(300.0f, 50.0f, -300.0f);
 	lights[0] = new Light(lp, tmeshes[1]->GetCenter(), 512, 512);
 	lp = vector(-100.0f, 50.0f, -700.0f);
 	lights[1] = new Light(lp, tmeshes[1]->GetCenter(), 512, 512);
-	//lights[1]->on = false;
-	//lights[0]->on = false;
+	lights[1]->on = false;
+	lights[0]->on = false;
 
 	RenderShadow();
 	Render();

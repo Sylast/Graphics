@@ -20,6 +20,26 @@ unsigned int enviromap::getColor( vector vd ) {
 
 void enviromap::Render() {
 
+	int fbi = 0;
+	while (fbi < 4) {
+		scene->tmeshes[3]->RenderFilled(ppc, faces[fbi++], BLACK, scene->lightsN,
+										  scene->lights, scene->ka, 
+										  scene->textures[scene->tmeshes[3]->texIndex],
+										  scene->tmeshes[3]->RenderMode);
+		ppc->rotate(PPC_PAN, 90.0);
+	}
+		ppc->rotate(PPC_TILT, 90.0);
+		scene->tmeshes[3]->RenderFilled(ppc, faces[fbi++], BLACK, scene->lightsN,
+										  scene->lights, scene->ka, 
+										  scene->textures[scene->tmeshes[3]->texIndex],
+										  scene->tmeshes[3]->RenderMode);
+		ppc->rotate(PPC_TILT, 180.0);
+		scene->tmeshes[3]->RenderFilled(ppc, faces[fbi++], BLACK, scene->lightsN,
+										  scene->lights, scene->ka, 
+										  scene->textures[scene->tmeshes[3]->texIndex],
+										  scene->tmeshes[3]->RenderMode);
+	//Set up to only render meshes that are faraway. for now just single one
+	/*
 	float MAPDIS = 1000.0f;
 
 	for (int tmi = 0; tmi < scene->tmeshesN; tmi++) {
@@ -34,7 +54,12 @@ void enviromap::Render() {
 											  scene->textures[scene->tmeshes[tmi]->texIndex],
 											  scene->tmeshes[tmi]->RenderMode);
 		}
+		scene->tmeshes[3]->RenderFilled(ppc, faces[3], BLACK, scene->lightsN,
+										  scene->lights, scene->ka, 
+										  scene->textures[scene->tmeshes[3]->texIndex],
+										  scene->tmeshes[3]->RenderMode);
 	}
+	*/
 
 }
 
