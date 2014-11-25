@@ -22,6 +22,9 @@
 #define RED		0xFF0000FF
 #define GREEN	0xFF00FF00
 #define BLUE	0xFFFF0000
+#define YELLOW	0xFF00FFFF
+#define CYAN	0xFFFFFF00
+#define MAGINTA 0xFFFF00FF
 
 class Scene {
 public:
@@ -41,6 +44,7 @@ public:
   GLuint *texName;
   float ka;
   bool HWinit;
+  enviromap *cube;
 
   Scene();
   void open( const char* );
@@ -49,6 +53,7 @@ public:
   void DBG();
   void Render();
   void RenderShadow();
+  void RenderCube();
 
   void RenderHW();
   void InitializeTextures();

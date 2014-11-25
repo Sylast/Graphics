@@ -1,6 +1,10 @@
 #include "enviromap.h"
-
 #include "scene.h"
+
+#include <math.h>
+
+PPC *lastCam;
+FrameBuffer *lastFace;
 
 //Initialize the enviromap at center of world facing NORTH
 enviromap::enviromap(vector center, vector vN) {
@@ -19,89 +23,170 @@ enviromap::enviromap(vector center, vector vN) {
 		faces[fi] = new FrameBuffer(0,0, wh, wh);
 		faceCams[fi] = new PPC(hfov, wh, wh); 
 	}
-	faceCams[EM_NORTH]->PositionAndOrient(worldCenter, worldCenter+toNorth, YAXIS);
-	faceCams[EM_WEST]->PositionAndOrient(worldCenter, worldCenter-toEast, YAXIS);
-	faceCams[EM_SOUTH]->PositionAndOrient(worldCenter, worldCenter-toNorth, YAXIS);
 	faceCams[EM_EAST]->PositionAndOrient(worldCenter, worldCenter+toEast, YAXIS);
+	faceCams[EM_WEST]->PositionAndOrient(worldCenter, worldCenter-toEast, YAXIS);
 	faceCams[EM_SKY]->PositionAndOrient(worldCenter, worldCenter+toSky, ZAXIS);
 	faceCams[EM_GROUND]->PositionAndOrient(worldCenter, worldCenter-toSky, -ZAXIS);
+	faceCams[EM_SOUTH]->PositionAndOrient(worldCenter, worldCenter-toNorth, YAXIS);
+	faceCams[EM_NORTH]->PositionAndOrient(worldCenter, worldCenter+toNorth, YAXIS);
 
-	Render();
-	
+	float cmc[72] =
+		{//	 x,		y,	   z,	  x,	 y,		z,	   x,	  y,	 z,		x,	   y,	  z
+			 1.0f, -1.0f, -1.0f,  1.0f, -1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f, -1.0f, // +X East		0 
+			-1.0f, -1.0f,  1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f,  1.0f, // -X West		1
+			-1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, // +Y Sky		2
+			-1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, // -Y Ground	3
+			 1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f, -1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f, // +Z South		4
+			-1.0f, -1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f,  1.0f, -1.0f, -1.0f,  1.0f, -1.0f, // -Z North		5
+		};
+	CubeMapCoord = new float[72];
+	for( int i = 0; i < 72; i++ ){
+		CubeMapCoord[i] = cmc[i];
+	}
 	enable = true;
 	
+}
+
+void enviromap::Render(PPC *ppc, FrameBuffer *fb) {
+	for (int v = 0; v < fb->h; v++) {
+		for (int u = 0; u < fb->w; u++) {
+			vector camRay = ppc->GetRayForPix(u , v);
+			fb->Set(u, v, getColor(camRay));
+		}
+	}
 }
 
 unsigned int enviromap::getColor( vector vd ) {
 
 	vector vdn = vd.norm();
 	vector colorPix;
-	PPC *currFaceCam;
-	FrameBuffer *currFace;
-	if( faceCams[EM_NORTH]->Project(vdn, colorPix) ){
-		currFace = faces[EM_NORTH];	
-		currFaceCam = faceCams[EM_NORTH];	
-	}else if( faceCams[EM_WEST]->Project(vdn, colorPix) ){
-		currFace = faces[EM_WEST];	
-		currFaceCam = faceCams[EM_WEST];	
-	}else if( faceCams[EM_SOUTH]->Project(vdn, colorPix) ){
-		currFace = faces[EM_SOUTH];	
-		currFaceCam = faceCams[EM_SOUTH];	
-	}else if( faceCams[EM_EAST]->Project(vdn, colorPix) ){
-		currFace = faces[EM_EAST];	
-		currFaceCam = faceCams[EM_EAST];	
-	}else if( faceCams[EM_SKY]->Project(vdn, colorPix) ){
-		currFace = faces[EM_SKY];	
-		currFaceCam = faceCams[EM_SKY];	
-	}else if( faceCams[EM_GROUND]->Project(vdn, colorPix) ){
-		currFace = faces[EM_GROUND];	
-		currFaceCam = faceCams[EM_GROUND];	
-	}
+	PPC *currCam = lastCam;
+	FrameBuffer *currFace = lastFace;
 
-	cout << colorPix << endl;
+	vector ip;
+	/*
+	if (vdn.IntersectPlaneWithRay(vdn, toEast, getCubeVertex(EM_EAST, EM_BL), ip) ) {
+		float x = (ip - getCubeVertex(EM_EAST, EM_BL))*zaxis;
+		float y = (ip - getCubeVertex(EM_EAST, EM_BL))*yaxis;
+		if( x > 0.0f && x < 2.0f && y > 0.0f && y < 2.0f ) {
+			lastCam = currCam = faceCams[EM_EAST];
+			currCam->Project(vdn, colorPix);
+			lastFace = currFace = faces[EM_EAST];
+		}
+	}
+	if (vdn.IntersectPlaneWithRay(vdn, toEast, getCubeVertex(EM_WEST, EM_BL), ip) ) {
+		float x = (ip - getCubeVertex(EM_WEST, EM_BL))*-zaxis;
+		float y = (ip - getCubeVertex(EM_WEST, EM_BL))*yaxis;
+		if( x > 0.0f && x < 2.0f && y > 0.0f && y < 2.0f ) {
+			lastCam = currCam = faceCams[EM_WEST];
+			currCam->Project(vdn, colorPix);
+			lastFace = currFace = faces[EM_WEST];
+		}
+	}
+	if (vdn.IntersectPlaneWithRay(vdn, toSky, getCubeVertex(EM_SKY, EM_BL), ip) ) {
+		float x = (ip - getCubeVertex(EM_SKY, EM_BL))*xaxis;
+		float y = (ip - getCubeVertex(EM_SKY, EM_BL))*zaxis;
+		if( x > 0.0f && x < 2.0f && y > 0.0f && y < 2.0f ) {
+			lastCam = currCam = faceCams[EM_SKY];
+			currCam->Project(vdn, colorPix);
+			lastFace = currFace = faces[EM_SKY];
+		}
+	}
+	if (vdn.IntersectPlaneWithRay(vdn, toSky, getCubeVertex(EM_GROUND, EM_BL), ip) ) {
+		float x = (ip - getCubeVertex(EM_GROUND, EM_BL))*xaxis;
+		float y = (ip - getCubeVertex(EM_GROUND, EM_BL))*-zaxis;
+		if( x > 0.0f && x < 2.0f && y > 0.0f && y < 2.0f ) {
+			lastCam = currCam = faceCams[EM_GROUND];
+			currCam->Project(vdn, colorPix);
+			lastFace = currFace = faces[EM_GROUND];
+		}
+	}
+	if (vdn.IntersectPlaneWithRay(vdn, toNorth, getCubeVertex(EM_SOUTH, EM_BL), ip) ) {
+		float x = (ip - getCubeVertex(EM_SOUTH, EM_BL))*-xaxis;
+		float y = (ip - getCubeVertex(EM_SOUTH, EM_BL))*yaxis;
+		if( x > 0.0f && x < 2.0f && y > 0.0f && y < 2.0f ) {
+			lastCam = currCam = faceCams[EM_SOUTH];
+			currCam->Project(vdn, colorPix);
+			lastFace = currFace = faces[EM_SOUTH];
+		}
+	}
+	if (vdn.IntersectPlaneWithRay(vdn, toNorth, getCubeVertex(EM_NORTH, EM_BL), ip) ) {
+		float x = (ip - getCubeVertex(EM_NORTH, EM_BL))*xaxis;
+		float y = (ip - getCubeVertex(EM_NORTH, EM_BL))*yaxis;
+		if( x > 0.0f && x < 2.0f && y > 0.0f && y < 2.0f ) {
+			lastCam = currCam = faceCams[EM_NORTH];
+			currCam->Project(vdn, colorPix);
+			lastFace = currFace = faces[EM_NORTH];
+		}
+	}
+	*/
+	vector eastP = getCubeVertex(EM_EAST, EM_BL);
+	vector westP = getCubeVertex(EM_WEST, EM_BL);
+	vector skyP = getCubeVertex(EM_SKY, EM_BL);
+	vector groundP = getCubeVertex(EM_GROUND, EM_BL);
+	vector southP = getCubeVertex(EM_SOUTH, EM_BL);
+	vector northP = getCubeVertex(EM_NORTH, EM_BL);
+	if( inFace(vdn, toEast, zaxis, yaxis, eastP) ) {
+		lastCam = currCam = faceCams[EM_EAST];
+		currCam->Project(vdn, colorPix);
+		lastFace = currFace = faces[EM_EAST];
+	}
+	if( inFace(vdn, -toEast, -zaxis, yaxis, westP) ) {
+		lastCam = currCam = faceCams[EM_WEST];
+		currCam->Project(vdn, colorPix);
+		lastFace = currFace = faces[EM_WEST];
+	}
+	if( inFace(vdn, toSky, xaxis, zaxis, skyP) ) {
+		lastCam = currCam = faceCams[EM_SKY];
+		currCam->Project(vdn, colorPix);
+		lastFace = currFace = faces[EM_SKY];
+	}
+	if( inFace(vdn, -toSky, xaxis, -zaxis, groundP) ) {
+		lastCam = currCam = faceCams[EM_GROUND];
+		currCam->Project(vdn, colorPix);
+		lastFace = currFace = faces[EM_GROUND];
+	}
+	if( inFace(vdn, toNorth, -xaxis, yaxis, southP) ) {
+		lastCam = currCam = faceCams[EM_SOUTH];
+		currCam->Project(vdn, colorPix);
+		lastFace = currFace = faces[EM_SOUTH];
+	}
+	if( inFace(vdn, toNorth, xaxis, yaxis, northP) ) {
+		lastCam = currCam = faceCams[EM_NORTH];
+		currCam->Project(vdn, colorPix);
+		lastFace = currFace = faces[EM_NORTH];
+	}
+	//cout << colorPix << endl;
+	if( currFace->IsOutsideFrame(colorPix[0], colorPix[1]) )
+		return 0;
 	return currFace->Get(colorPix[0], colorPix[1]);
 
 }
 
-void enviromap::Render() {
-
-	for( int fbi = 0; fbi < 6; fbi++ ) {
-		scene->tmeshes[3]->RenderFilled(faceCams[fbi], faces[fbi], BLACK, scene->lightsN,
-										  scene->lights, scene->ka, 
-										  scene->textures[scene->tmeshes[3]->texIndex],
-										  scene->tmeshes[3]->RenderMode);
+bool enviromap::inFace(vector vdn, vector faceN, vector xD, vector yD, vector facePoint) {
+	vector ip;
+	if (vdn.IntersectPlaneWithRay(vdn, faceN, facePoint, ip) ) {
+			float x = (ip - facePoint)*xD;
+			float y = (ip - facePoint)*yD;
+			if( x > 0.0f && x < 2.0f && y > 0.0f && y < 2.0f ) 
+				return true;
 	}
+	return false;
+}
 
-	//Set up to only render meshes that are faraway. for now just single one
-	/*
-	float MAPDIS = 1000.0f;
-
-	for (int tmi = 0; tmi < scene->tmeshesN; tmi++) {
-		if (!scene->tmeshes[tmi]->enabled)
-			continue;
-		float dis = (scene->tmeshes[tmi]->GetCenter() - world).length();
-		if (dis < MAPDIS)
-			continue;
-		for (int fbi = 0; fbi < 6; fbi++) {
-			scene->tmeshes[tmi]->RenderFilled(ppc, faces[fbi], BLACK, scene->lightsN,
-											  scene->lights, scene->ka, 
-											  scene->textures[scene->tmeshes[tmi]->texIndex],
-											  scene->tmeshes[tmi]->RenderMode);
-		}
-		scene->tmeshes[3]->RenderFilled(ppc, faces[3], BLACK, scene->lightsN,
-										  scene->lights, scene->ka, 
-										  scene->textures[scene->tmeshes[3]->texIndex],
-										  scene->tmeshes[3]->RenderMode);
-	}
-	*/
-
+vector enviromap::getCubeVertex(int face, int corner) {
+	vector ret;
+	ret = vector(CubeMapCoord[face*12+(corner+0)], 
+				 CubeMapCoord[face*12+(corner+1)],	
+				 CubeMapCoord[face*12+(corner+2)]);
+	return ret;
 }
 
 bool enviromap::save() {
 
 	string path = "enviromap/";
-	string imageName[6] = {"north.tif", "west.tif", "south.tif", 
-						  "east.tif", "sky.tif", "ground.tif"};
+	string imageName[6] = {"east.tif", "west.tif", "sky.tif", 
+						   "ground.tif","south.tif", "north.tif"};
 
 	int w = faces[0]->w;
 	int h = faces[0]->h;

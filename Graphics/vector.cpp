@@ -134,6 +134,18 @@ vector vector::norm() {
 	return v/v.length();
 }
 
+bool vector::IntersectPlaneWithRay(vector rayDirection, 
+    vector planeNormal, vector planePoint, vector &intersectionPoint) {
+
+  vector &P = *this;
+  float t = ((planePoint - P)*planeNormal) / (rayDirection * planeNormal);
+  if (t < 0.0f)
+    return false;
+  intersectionPoint = P + rayDirection * t;
+  return true;
+
+}
+
 //Rotations
 
 //Rotation of a point, using two points to define the axis of rotation

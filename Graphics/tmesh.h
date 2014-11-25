@@ -4,6 +4,7 @@
 #include "framebuffer.h"
 #include "ppc.h"
 #include "light.h"
+#include "enviromap.h"
 
 //RenderModes
 #define WF		0
@@ -12,6 +13,7 @@
 #define PPDL	3 //per pixel diffuse lighting
 #define TM		4 //texture mapping
 #define SM		5
+#define RFL		6 //Reflection
 
 class TMesh {
 public:
@@ -36,7 +38,7 @@ public:
   void LoadBin(char *fname);
   void RenderPoints(PPC *ppc, FrameBuffer *fb, int psize);
   void RenderWireframe(PPC *ppc, FrameBuffer *fb, unsigned int color);
-  void RenderFilled(PPC *ppc, FrameBuffer *fb, unsigned int color, int lightsN, Light **L, float ka, FrameBuffer *texture, int renderMode);
+  void RenderFilled(PPC *ppc, FrameBuffer *fb, unsigned int color, int lightsN, Light **L, float ka, FrameBuffer *texture, enviromap *cube, int renderMode);
   void RenderModel(PPC *ppc, FrameBuffer *fb, int renderMode);
   void RenderHW();
 
@@ -52,6 +54,7 @@ public:
 
   vector GetCenter();
   vector GetCenterOfBB();
+  vector GetReflectionVector(PPC *ppc); 
   void Position(vector newCenter);
   void ScaleToNewDiagonal(float newDiagonal);
   void Scale(float scf);

@@ -26,7 +26,8 @@ PixelDataOutput FragmentMain( VertexDataOutput pdi, uniform float3 eye,
     float3 n = normalize(pdi.normal);
     float3 rv = n*dot(n, ev)*2.0f - ev;
     rv = normalize(rv);
-	
+//	ret.color.rgb = (rv + float3(1.0f, 1.0f, 1.0f))/2.0f;
+
     float3 P = pdi.vertex;
     float3 xaxis = (v2-v0);
     float3 yaxis = (v1-v0);

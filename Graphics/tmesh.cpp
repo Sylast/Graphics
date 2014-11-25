@@ -274,7 +274,9 @@ void TMesh::RenderWireframe(PPC *ppc, FrameBuffer *fb, unsigned int color) {
  *	Renders the triangle mess, shades using the sence lights.
  *  Shadow Mapping implimented 
  */
-void TMesh::RenderFilled(PPC *ppc, FrameBuffer *fb, unsigned int color, int lightsN, Light **L, float ka, FrameBuffer *texture, int renderMode) {
+void TMesh::RenderFilled(PPC *ppc, FrameBuffer *fb, unsigned int color, int lightsN, 
+						 Light **L, float ka, FrameBuffer *texture, 
+						 enviromap *cube, int renderMode) {
 
 	//Project vertices on to the camera
 	vector *pverts = new vector[vertsN];
@@ -405,17 +407,26 @@ void TMesh::RenderFilled(PPC *ppc, FrameBuffer *fb, unsigned int color, int ligh
 					if(st < 0 || st > h*w) continue;
 					currColor.SetFromColor(texture->pix[st]);
 				}
+				vector currNormal = vector(nxABC*pv/(DEF*pv), nyABC*pv/(DEF*pv), nzABC*pv/(DEF*pv)).norm();
+				if ( renderMode == RFL ) {
+					vector eye = ppc->C;
+					vector P = ppc->UnProject(pv);
+					vector ev = (eye - P);
+					vector rv = currNormal*(currNormal*ev)*2.0f - ev; 
+					rv = rv.norm();
+					//currColor = (rv + vector(1.0f, 1.0f, 1.0f))/2.0f;
+					currColor.SetFromColor(cube->getColor(rv));
+				}
 				//Calculated Color at pixel using phong equation
 				for( int li = 0; li < lightsN; li++ ){
 					if(!L[li]->on)
 						continue;
 					vector fullColor;
 					fullColor.SetFromColor(color);
-					vector currNormal, lv;
+					vector lv;
 					vector pp(pv);
 					pp[2] = currz;
 					lv = (L[li]->L->C - ppc->UnProject(pp)).norm();
-					currNormal = vector(nxABC*pv/(DEF*pv), nyABC*pv/(DEF*pv), nzABC*pv/(DEF*pv)).norm();
 					float kd = lv * currNormal;
 					kd = (kd < 0.0f) ? 0.0f : kd;
 					//currColor = currColor * ka ;

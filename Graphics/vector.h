@@ -55,8 +55,11 @@ public:
 	void rotateVector(vector,  float );
 
 	//Color
-	void vector::SetFromColor( unsigned int );
-	unsigned int vector::GetColor();
+	void SetFromColor( unsigned int );
+	unsigned int GetColor();
+
+	bool IntersectPlaneWithRay(vector rayDirection, 
+    vector planeNormal, vector planePoint, vector &intersectionPoint);
 
 };
 

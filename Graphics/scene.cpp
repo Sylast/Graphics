@@ -58,7 +58,7 @@ Scene::Scene() {
 	vector newCenter = vector(0.0f, 0.0f, 0.0f);
 	tmeshes[1]->Position(newCenter);
 	tmeshes[1]->Scale(.1);
-	tmeshes[1]->RenderMode = MCI;
+	tmeshes[1]->RenderMode = RFL;
 	tmeshes[1]->shade = true;
 	
 	tmeshes[2] = new TMesh();
@@ -73,7 +73,7 @@ Scene::Scene() {
 	tmeshes[3] = new TMesh();
 	tmeshes[3]->LoadBin("geometry/auditorium.bin");
 	tmeshes[3]->RenderMode = MCI;
-	newCenter = vector(0.0f, 0.0f, 0.0f);
+	newCenter = vector(0.0f, -70.0f, 0.0f);
 	tmeshes[3]->Position(newCenter);
 	tmeshes[3]->Rotate(xaxis, -90.0f);
 	tmeshes[3]->Rotate(yaxis, 180.0f);
@@ -82,7 +82,7 @@ Scene::Scene() {
 	tmeshes[0]->enabled = false;
 	//tmeshes[1]->enabled = false;
 	tmeshes[2]->enabled = false;
-	//tmeshes[3]->enabled = false;
+	tmeshes[3]->enabled = false;
 
 	lightsN = 2;
 	ka = 1.0f;
@@ -94,6 +94,9 @@ Scene::Scene() {
 	lights[1]->on = false;
 	lights[0]->on = false;
 
+	cube = new enviromap();
+
+	RenderCube();
 	RenderShadow();
 	Render();
 
@@ -105,6 +108,7 @@ void Scene::Render() {
 		hwfb->redraw();
 
 	fb->Clear(0xFFAAAAAA, 0.0f);
+	cube->Render(ppc, fb);
 	for (int tmi = 0; tmi < tmeshesN; tmi++) {
 		if (!tmeshes[tmi]->enabled)
 			continue;
@@ -113,7 +117,7 @@ void Scene::Render() {
 		if(tmeshes[tmi]->RenderMode == WF)
 			tmeshes[tmi]->RenderWireframe(ppc, fb, BLACK);
 		else
-			tmeshes[tmi]->RenderFilled(ppc, fb, RED, lightsN, lights, ka, textures[tmeshes[tmi]->texIndex], tmeshes[tmi]->RenderMode);
+			tmeshes[tmi]->RenderFilled(ppc, fb, RED, lightsN, lights, ka, textures[tmeshes[tmi]->texIndex], cube, tmeshes[tmi]->RenderMode);
 	}
 	//fb->Draw3DPoint(lights[0]->L->C, ppc, 10, vector(1,1,1));
 	fb->redraw();
@@ -129,7 +133,7 @@ void Scene::RenderShadow() {
 		for (int tmi = 0; tmi < tmeshesN; tmi++) {
 			if (!tmeshes[tmi]->enabled)
 				continue;
-			tmeshes[tmi]->RenderFilled(lights[li]->L, lights[li]->sm, BLACK, 0, NULL, 0.0f, NULL, SM);
+			tmeshes[tmi]->RenderFilled(lights[li]->L, lights[li]->sm, BLACK, 0, NULL, 0.0f, NULL, cube, SM);
 		}
 	}
 }
@@ -164,6 +168,15 @@ void Scene::RenderHW() {
 			cgi->DisableProfiles();
 		}
 	}
+}
+
+void Scene::RenderCube() {
+	for( int fbi = 0; fbi < 6; fbi++ ) {
+		tmeshes[3]->RenderFilled(cube->faceCams[fbi], cube->faces[fbi], BLACK, lightsN,
+								 lights, ka, textures[tmeshes[3]->texIndex],
+								 cube, tmeshes[3]->RenderMode);
+	}
+	//Set up to only render meshes that are faraway. for now just single one
 }
 
 void Scene::InitializeTextures() {
@@ -418,16 +431,18 @@ int FrameBuffer::handle(int event) {
 
 void Scene::DBG() {
 
+
+#if 0
 	{
 	vector toNorth(0.0f, 0.0f, -1.0f);
 	vector testV(-1.0f, .5f, -1.0f);
 	vector center(0.0f,0.0f,0.0f);
-	enviromap *cube = new enviromap();
-	unsigned int c = cube->getColor(testV);
-	cout << c << endl;
-	//cube->save();
+	cube->save();
+	cube->Render(ppc, fb);
+	fb->redraw();
 	return;
 	}
+#endif 
 
 	int save = 0;
 	string file = "Video/img";
@@ -446,7 +461,7 @@ void Scene::DBG() {
 	ppc1->translate(PPC_FORWARD, dis);
 	vector lap = center;
 	ppc1->PositionAndOrient(ppc1->C, lap, vector(0.0f, 1.0f, 0.0f));
-    int stepsN = 100;
+    int stepsN = 30;
     for (int si = 0; si < stepsN; si++) {
       ppc->SetByInterpolation(ppc0, ppc1, (float) si / (float) (stepsN-1));
 	  Render();
